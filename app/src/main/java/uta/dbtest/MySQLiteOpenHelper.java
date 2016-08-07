@@ -5,7 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.StrictMode;
 
-public class MySQLiteOpenHelper extends SQLiteOpenHelper {
+class MySQLiteOpenHelper extends SQLiteOpenHelper {
+    private static MySQLiteOpenHelper singleton = null;
 
     final static private int DB_VERSION = 1;
     final static String CREATE_TABLE = "create table CodeM (" +
@@ -15,7 +16,23 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
             "   primary key(CodeId, Code)" +
             ");";
 
-    public MySQLiteOpenHelper(Context context) {
+    final static String CREATE_PRODUCT_TABLE = "create table Account (" +
+            "   FirstName text," +
+            "   LastName text," +
+            "   PrefectureId integer," +
+            "   Address text," +
+            "   MailAddress text," +
+            "   Password text" +
+            ");";
+
+    public static synchronized MySQLiteOpenHelper getInstance(Context context) {
+        if (singleton == null) {
+            singleton = new MySQLiteOpenHelper(context);
+        }
+        return singleton;
+    }
+
+    private MySQLiteOpenHelper(Context context) {
         super(context, null, null, DB_VERSION);
     }
 
@@ -23,6 +40,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // table create
         db.execSQL(CREATE_TABLE);
+        db.execSQL(CREATE_PRODUCT_TABLE);
 
         // table row insert
         db.execSQL("insert into CodeM(CodeId,Code,Name) values (1, 1, '北海道');");
@@ -73,6 +91,8 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         db.execSQL("insert into CodeM(CodeId,Code,Name) values (1, 46, '鹿児島');");
         db.execSQL("insert into CodeM(CodeId,Code,Name) values (1, 47, '沖縄');");
         db.execSQL("insert into CodeM(CodeId,Code,Name) values (2, 1, '30');");
+
+        db.execSQL("insert into Account(FirstName, LastName, PrefectureId, Address, MailAddress, Password) values ('隆史', '山田', 39, '高知市鏡竹奈路', 'newTakashi@gmail.com', 'passttt');");
 
     }
 
